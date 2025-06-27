@@ -20,10 +20,12 @@ const Login = () => {
         onSubmit: async (values) => {
             try {
                 let result = await axios.post('http://localhost:3000/user/login', values);
-                localStorage.setItem('token', result?.data?.token);
+                sessionStorage.setItem('token', result?.data?.token);
                 toast.success(result?.data?.message || 'Login successful');
                 const user = jwtDecode(result?.data?.token);
-                navigate('/', {state:user}, { replace: true });
+                sessionStorage.setItem('user', JSON.stringify(user));
+                navigate('/', {state:user});
+                // navigate('/');
             } catch (error) {
                 if (error.response && error.response.data) {
                     toast.error(error.response.data.message || 'Login failed');

@@ -1,10 +1,9 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react';
 import ChatList from './ChatList'
 import ChatSidebarTabs from './ChatSidebarTabs'
 import UserList from './UserList'
 
-const Sidebar = ({onlineUsers}) => {
-    console.log(onlineUsers, 'onlineUsers')
+const Sidebar = ({ onlineUsers, setRoomData }) => {
     const [activeTab, setActiveTab] = useState('chat-list');
     const handleTabChange = useCallback((tab) => {
         setActiveTab(tab);
@@ -16,12 +15,12 @@ const Sidebar = ({onlineUsers}) => {
                 {
                     activeTab === 'chat-list' &&
                     <div id="chat-list" role="tabpanel" aria-labelledby="chat-list">
-                        <ChatList />
+                        <ChatList onlineUsers={onlineUsers} setRoomData={setRoomData} />
                     </div>
                 }
                 {activeTab === 'user-list' &&
                     <div id="user-list" role="tabpanel" aria-labelledby="user-list">
-                            <UserList onlineUsers={onlineUsers} />
+                        <UserList onlineUsers={onlineUsers} />
                     </div>
                 }
             </div>

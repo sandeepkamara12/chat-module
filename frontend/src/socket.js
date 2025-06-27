@@ -9,7 +9,7 @@ const socket = io(url, {
 
 // socket.on('connect', () => {
 //     console.log('Connected to the server');
-// });
+// });t
 
 // socket.on('chat message', (msg) => {
 //     console.log('New message:', msg);

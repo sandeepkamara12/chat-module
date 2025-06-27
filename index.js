@@ -10,7 +10,6 @@ app.use(express.static(path.resolve('public')));
 
 io.on('connection', (socket) => {
     socket.on('chat message', (msg) => {
-        console.log('Message received:', msg);
         io.emit('chat message', msg); // Broadcast the message to all connected clients
     });
   console.log('A user connected:', socket.id);

@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 const Header = () => {
     const navigate = useNavigate();
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     return (
         <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
             <nav className="my-4 relative max-w-2xl w-full bg-white border border-gray-200 rounded-[24px] mx-2 flex flex-wrap md:flex-nowrap items-center justify-between p-1 px-4 md:py-0 sm:mx-auto dark:bg-neutral-900 dark:border-neutral-700">
@@ -32,7 +32,7 @@ const Header = () => {
                                 :
                                 <>
                                     <Link className="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-gray-800 font-medium text-gray-800 hover:text-gray-800 focus:outline-hidden dark:border-neutral-200 dark:text-neutral-200 dark:hover:text-neutral-200" to="/" aria-current="page">Chat</Link>
-                                    <button onClick={() => { localStorage.removeItem('token'); navigate('/login', { replace: true }) }} className="cursor-pointer py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-transparent text-gray-500 hover:text-gray-800 focus:outline-hidden dark:text-neutral-400 dark:hover:text-neutral-200">Logout</button>
+                                    <button onClick={() => { sessionStorage.clear(); navigate('/login', { replace: true }) }} className="cursor-pointer py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-transparent text-gray-500 hover:text-gray-800 focus:outline-hidden dark:text-neutral-400 dark:hover:text-neutral-200">Logout</button>
                                 </>
                         }
                     </div>
