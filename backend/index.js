@@ -6,7 +6,7 @@ import { Server } from "socket.io";
 import userController from "./controller/user.js"; // Adjust the path as necessary
 import connectDB from "./config/db.js";
 import { socketHandler } from "./socket/index.js";
-import { getMessages } from "./controller/message.js";
+import messageController from "./controller/message.js";
 const app = express();
 dotenv.config();
 const server = createServer(app);
@@ -27,4 +27,4 @@ connectDB()
   });
 
 app.use("/user", userController);
-app.use("/message", getMessages);
+app.use("/message", messageController);

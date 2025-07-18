@@ -3,38 +3,37 @@ const messageSchema = mongoose.Schema(
   {
     message: {
       type: String,
-      required: true,
+      required: true
     },
     sender: {
-      id:{
-        type:String,
-        // type:mongoose.Schema.Types.ObjectId,
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true
       },
-      fullname:{
-        type:String,
-        required:true
+      fullname: {
+        type: String,
+        required: true
       },
-      email:{
-        type:String,
-        required:true,
-      },
+      email: {
+        type: String,
+        required: true
+      }
     },
     receiver: {
-    id:{
-        // type:mongoose.Schema.Types.ObjectId,
-        type:String,
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true
       },
-      fullname:{
-        type:String,
-        required:true
+      fullname: {
+        type: String,
+        required: true
       },
-      email:{
-        type:String,
-        required:true,
-      },
-    }
+      email: {
+        type: String,
+        required: true
+      }
+    },
+    replyMessage:{}
   },
   {
     timestamps: true

@@ -23,6 +23,8 @@ const Login = () => {
                 sessionStorage.setItem('token', result?.data?.token);
                 toast.success(result?.data?.message || 'Login successful');
                 const user = jwtDecode(result?.data?.token);
+                user._id = user?.id;
+                delete user?.id;
                 sessionStorage.setItem('user', JSON.stringify(user));
                 navigate('/', {state:user});
                 // navigate('/');

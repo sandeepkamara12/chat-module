@@ -3,7 +3,7 @@ import ChatList from './ChatList'
 import ChatSidebarTabs from './ChatSidebarTabs'
 import UserList from './UserList'
 
-const Sidebar = ({ onlineUsers, setRoomData }) => {
+const Sidebar = ({ onlineUsers, setRoomData, setAllMessages }) => {
     const [activeTab, setActiveTab] = useState('chat-list');
     const handleTabChange = useCallback((tab) => {
         setActiveTab(tab);
@@ -15,7 +15,7 @@ const Sidebar = ({ onlineUsers, setRoomData }) => {
                 {
                     activeTab === 'chat-list' &&
                     <div id="chat-list" role="tabpanel" aria-labelledby="chat-list">
-                        <ChatList onlineUsers={onlineUsers} setRoomData={setRoomData} />
+                        <ChatList onlineUsers={onlineUsers} setRoomData={setRoomData} setAllMessages={setAllMessages} />
                     </div>
                 }
                 {activeTab === 'user-list' &&

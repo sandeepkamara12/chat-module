@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react'
+import axios from 'axios';
 import Sidebar from './Sidebar'
 import { useEffect } from 'react'
 import io from 'socket.io-client'
@@ -15,7 +16,8 @@ const Chat = () => {
   const [connected, setConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
-  const [roomData, setRoomData] = useState({ room: null });
+  const [replyMessage, setReplyMessage] = useState({});
+  const [roomData, setRoomData] = useState({ room: null,  receiver: null });
 
 
   useEffect(() => {
@@ -43,33 +45,58 @@ const Chat = () => {
       socketRef.current.emit("ADD_USER", state);
       socketRef.current.on("USER_ADDED", data => setOnlineUsers(data));
       socketRef.current.on("RECEIVED_MESSAGE", data => {
+        console.log(data, 'hello dear');
         setAllMessages(prev => [...prev, data]);
-        // if (roomData?.room?.socketId === data.room) {
-        //   setRoomData(prev => ({ ...prev, messages: [...prev.messages, data] }));
-        // }
+      });
+     socketRef.current.on("DELETED_MESSAGE", (data) => {
+        setAllMessages((prevState) =>
+          prevState.filter((item) => item._id != data.message._id)
+        );
       });
       
       return () => socketRef.current.disconnect();
     }
   }, [connected, state]);
-console.log(allMessages, 'all messages'); 
+
   const handleSendMessage = useCallback((message) => {
-    console.log('roomdata is : ', roomData);
     if (socketRef.current.connected) {
+      let sender = state;
+      sender.socketId = socketRef?.current?._id
+    
       let data = {
         message: message,
-        sender: state,
+        sender: sender,
         receiver: roomData?.receiver
+      }
+      if(replyMessage) {
+        data.replyMessage = replyMessage;
       }
       socketRef.current.emit('SEND_MESSAGE', data);
       setAllMessages(prev => [...prev, data]);
     }
-  }, [state, roomData])
+  }, [state, roomData, replyMessage])
+
+    const deleteMessage = useCallback(async (messageId) => {
+        try {
+          let deletedItem = await axios.delete(`http://localhost:3000/message/${messageId}`);
+          console.log(deletedItem, 'deletedItem', roomData?.receiver);
+            if (socketRef.current.connected) {
+              let data = {
+                message: deletedItem?.data?.data,
+                receiver: roomData?.receiver
+              }
+              socketRef.current.emit('DELETE_MESSAGE', data);   
+              setAllMessages(prev=>prev.filter(data=>data._id!=deletedItem?.data?.data?._id))
+           }
+        } catch (error) {
+            console.log(error, 'error while delete a message');
+        }
+    }, [roomData?.receiver]);
 
   return (
     <div className='flex h-[calc(100vh-80px)] w-full mx-auto'>
-      <Sidebar onlineUsers={onlineUsers} setRoomData={setRoomData} />
-      <ChatModule currentUser={state} allMessages={allMessages} roomData={roomData} handleSendMessage={handleSendMessage} />
+      <Sidebar setAllMessages={setAllMessages} onlineUsers={onlineUsers} setRoomData={setRoomData} />
+      <ChatModule setReplyMessage={setReplyMessage} replyMessage={replyMessage} deleteMessage={deleteMessage} currentUser={state} allMessages={allMessages} roomData={roomData} handleSendMessage={handleSendMessage} />
       <Profile user={state} currentUser={JSON.parse(sessionStorage.getItem('user'))} />
     </div>
   )

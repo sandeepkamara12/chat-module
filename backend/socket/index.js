@@ -3,7 +3,7 @@ import { saveMessage } from "../controller/message.js";
 let onlineUsers = [];
 
 const addUser = (user, socketId) => {
-  const existingIndex = onlineUsers.findIndex(u => u.id === user?.id);
+  const existingIndex = onlineUsers.findIndex(u => u._id === user?._id);
   if (existingIndex !== -1) {
     onlineUsers.splice(existingIndex, 1);
   }
@@ -30,38 +30,25 @@ export const socketHandler = server => {
   io.on("connection", (socket) => {
     socket.on("ADD_USER", (user) => {
       addUser(user, socket.id);
-      io.emit("USER_ADDED", onlineUsers);
-
-      // Get other users (exclude the current one)
-      // const otherUsers = onlineUsers.filter(u => u.id !== user.id);
-
-      // Send only to the newly connected user
-
-      // Optionally notify others that this user joined (if needed)
-      // socket.broadcast.emit("USER_ADDED", {
-      //   onlineUsers: onlineUsers.filter(u => u.id !== socket.id)
-      // });
-
-      
+      io.emit("USER_ADDED", onlineUsers);      
     });
-    socket.on("SEND_MESSAGE", (data) => {
-      saveMessage(data);
-      socket.to(data?.receiver?.socketId).emit("RECEIVED_MESSAGE", data);
+    socket.on("SEND_MESSAGE", async (data) => {
+      console.log(data, 'with reply message')
+      const isSaved = await saveMessage(data);
+      io.to(data?.receiver?.socketId).to(data.sender.socketId).emit("RECEIVED_MESSAGE", isSaved);
     });
 
+    // socket.on("SEND_MESSAGE", async (data) => {
+    //   let savedMessage = await saveMessage(data);
+    //   io.to(data?.receiver?.socketId).to(data?.sender?.socketId).emit("RECEIVED_MESSAGE", savedMessage);
+    // });
 
+    socket.on("DELETE_MESSAGE", (data) => {
+      socket.to(data.receiver.socketId).emit("DELETED_MESSAGE", data);
+    });
     socket.on("disconnect", () => {
-      // console.log(socket.id, 'disconnected');
       removeUser(socket.id);
       io.emit("USER_ADDED", onlineUsers);
-      // Notify everyone with updated list (excluding themselves)
-      // onlineUsers.forEach(user => {
-      //   const socketForUser = io.sockets.sockets.get(user.socketId);
-      //   if (socketForUser) {
-      //     const otherUsers = onlineUsers.filter(u => u.id !== user.id);
-      //     socketForUser.emit("USER_ADDED", { onlineUsers: otherUsers });
-      //   }
-      // });
     });
   });
 };

@@ -1,9 +1,16 @@
 import React from 'react'
+import axios from 'axios';
 
-const ChatList = ({onlineUsers, setRoomData}) => {
+const ChatList = ({onlineUsers, setRoomData, setAllMessages}) => {
     const currentUser = JSON.parse(sessionStorage.getItem('user'));
-    const handleChatRoom = (user) => {
+    const handleChatRoom = async (user) => {
         setRoomData(prev=>({...prev,room:'teset', receiver:user}));
+        try {
+            let result = await axios.get(`http://localhost:3000/message/${user._id}`)
+            setAllMessages(result?.data?.data);
+        } catch (error) {
+            console.log(error, 'error while getting messages');
+        }
     }
     return (
         <div className="flex flex-wrap">
@@ -11,7 +18,7 @@ const ChatList = ({onlineUsers, setRoomData}) => {
              
                 <nav className="flex w-full flex-col" aria-label="Tabs" role="tablist" aria-orientation="horizontal">
                     {
-                        onlineUsers?.filter(user=>user?.id!==currentUser?.id).map((user, index) => (
+                        onlineUsers?.filter(user=>user?._id!==currentUser?._id).map((user, index) => (
                             <div onClick={()=>handleChatRoom(user)} key={index} className="hover:bg-gray-100 border-b border-gray-100 cursor-pointer transition-all hs-tab-active:text-blue-600 py-4 px-5 flex text-sm text-gray-500 active" id="vertical-tab-with-border-item-1" aria-selected="true" data-hs-tab="#vertical-tab-with-border-1" aria-controls="vertical-tab-with-border-1" role="tab">
                                 <div className='flex gap-x-2 justify-between w-full'>
                                     <div className='relative w-10 h-10 '>
